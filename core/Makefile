@@ -1167,7 +1167,10 @@ name := $(TARGET_PRODUCT)
 ifeq ($(TARGET_BUILD_TYPE),debug)
   name := $(name)_debug
 endif
-name := $(name)_ota_$(shell date +"%Y-%m-%d"-%r)
+PROG_BUILD_NUM = .build_number
+BUILD_NUM = $(shell cat $(PROG_BUILD_NUM))
+name := $(name)_ota_$(shell date +"%Y-%m-%d")-$(BUILD_NUM)
+
 INTERNAL_OTA_PACKAGE_TARGET := $(PRODUCT_OUT)/$(name).zip
 
 $(INTERNAL_OTA_PACKAGE_TARGET): KEY_CERT_PAIR := $(DEFAULT_KEY_CERT_PAIR)
@@ -1183,7 +1186,8 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 
 .PHONY: otapackage
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-
+	
+	@echo $$(($$(cat $(PROG_BUILD_NUM)) + 1)) > $(PROG_BUILD_NUM)
 # -----------------------------------------------------------------
 # The update package
 
